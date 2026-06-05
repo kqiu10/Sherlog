@@ -1,0 +1,32 @@
+[
+  {
+    "title": "TS2345: env var typed as string | undefined passed to fetch",
+    "log": "src/config/env.ts:12:30 - error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'. Type 'undefined' is not assignable to type 'string'. process.env.API_URL used without a guard.",
+    "root_cause": "An environment variable read via process.env is typed string | undefined, but was passed where a string is required without a null check.",
+    "fix": "Add a runtime guard or fallback: `const apiUrl = process.env.API_URL ?? throwIfMissing()` or `process.env.API_URL!` only after validating it at startup."
+  },
+  {
+    "title": "Module not found after dependency bump",
+    "log": "Error: Cannot find module 'lodash/fp' from 'src/utils/transform.js'. npm ERR! code MODULE_NOT_FOUND. Build failed during webpack compile.",
+    "root_cause": "A dependency was upgraded to a major version that moved or removed a submodule path, breaking a deep import.",
+    "fix": "Pin the dependency to the previous major, or update the import to the new path exported by the upgraded package."
+  },
+  {
+    "title": "Jest test timeout from unclosed DB handle",
+    "log": "Jest did not exit one second after the test run completed. A worker process has failed to exit gracefully. Test suite failed: timeout of 5000ms exceeded waiting for async operation.",
+    "root_cause": "A database connection or timer was left open after tests finished, so Jest's event loop never drained.",
+    "fix": "Close the pool/connection in an afterAll hook and ensure all async resources are awaited and torn down."
+  },
+  {
+    "title": "Docker build fails: COPY path not in build context",
+    "log": "Step 5/12 : COPY ./config/app.yaml /app/config/ COPY failed: file not found in build context or excluded by .dockerignore: stat config/app.yaml: file does not exist.",
+    "root_cause": "A file referenced by COPY is outside the Docker build context or excluded by .dockerignore.",
+    "fix": "Move the file into the build context or remove its matching pattern from .dockerignore; verify the build context root passed to docker build."
+  },
+  {
+    "title": "Python ImportError: circular import on app startup",
+    "log": "ImportError: cannot import name 'db' from partially initialized module 'app.models' (most likely due to a circular import). File app/services/user.py line 3.",
+    "root_cause": "Two modules import each other at module load time, creating a circular dependency that fails on first import.",
+    "fix": "Break the cycle by moving the shared import inside a function, or extract the shared object into a third module both can import."
+  }
+]

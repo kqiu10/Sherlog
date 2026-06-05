@@ -218,14 +218,24 @@ __marimo__/
 .streamlit/secrets.toml
 
 # ── Sherlog project-specific ────────────────────────
+# NOTE: .gitignore does NOT support inline (end-of-line) comments —
+# a '#' only starts a comment at the start of a line. Keep comments on their own lines.
 .env
 .env.*
 !.env.example
-pgdata/                # Docker Postgres volume
-.langgraph_api/        # LangGraph dev server state
-data/raw/              # bulky downloaded logs (loghub / CI failures)
-data/embeddings/       # generated vector dumps
-eval/results/          # generated eval run outputs
+
+# Docker Postgres data volume
+pgdata/
+
+# LangGraph dev server state
+.langgraph_api/
+
+# Bulky downloaded logs (loghub / CI failures) and generated artifacts
+data/raw/
+data/embeddings/
+eval/results/
+
+# OS / editor
 .DS_Store
 .idea/
 .vscode/
