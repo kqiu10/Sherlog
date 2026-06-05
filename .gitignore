@@ -235,6 +235,11 @@ data/raw/
 data/embeddings/
 eval/results/
 
+# Sample/fixture logs are intentional test data, not runtime logs — keep them
+# (GitHub's Python template ignores *.log, which would otherwise drop these).
+!data/samples/*.log
+!examples/**/*.log
+
 # OS / editor
 .DS_Store
 .idea/

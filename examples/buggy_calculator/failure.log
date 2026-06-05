@@ -1,0 +1,17 @@
+============================= test session starts ==============================
+collected 1 item
+
+test_calculator.py F                                                     [100%]
+
+=================================== FAILURES ===================================
+___________________________ test_apply_discount_ten_percent ____________________
+
+    def test_apply_discount_ten_percent():
+>       assert apply_discount(100, 0.1) == 90
+E       assert 99.9 == 90
+E        +  where 99.9 = apply_discount(100, 0.1)
+
+test_calculator.py:8: AssertionError
+=========================== short test summary info ============================
+FAILED test_calculator.py::test_apply_discount_ten_percent - assert 99.9 == 90
+============================== 1 failed in 0.03s ===============================
