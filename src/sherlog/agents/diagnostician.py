@@ -1,13 +1,20 @@
-"""Diagnostician node: ask Claude for the single most likely root cause.
+"""Diagnostician node: identify the single most likely root cause.
 
-This is the core reasoning step. In P1 it sees only the parsed log; from P2 it
-will also receive retrieved historical context, and from P3 it will accept Critic
-feedback to revise a previous hypothesis (the self-correction loop).
+Two variants share the same inputs (log + retrieved context + any Critic feedback):
+
+- `diagnose` (sync): log-only reasoning. Used when there's no project to inspect
+  (e.g. the eval cases, which are bare logs).
+- `make_tool_diagnose(target_dir)` (async): an investigator that can call the MCP
+  tools (read_file / search_code / run_command) to look at the actual code and run
+  the tests before concluding. Used when the CLI is given a target repo. This is
+  what lets the diagnosis rest on evidence the log alone doesn't contain.
 """
 
 from langchain_core.messages import HumanMessage, SystemMessage
+from langgraph.prebuilt import create_react_agent
 
 from sherlog.llm import get_llm
+from sherlog.mcp_client import load_tools
 from sherlog.state import DiagnosisState
 
 SYSTEM_PROMPT = """You are an expert SRE/diagnostics engineer.
@@ -15,24 +22,44 @@ Given a failure log, identify the single most likely root cause.
 Be specific and concrete. Respond in 2-4 sentences. State the root cause first,
 then the key evidence from the log that supports it."""
 
+INVESTIGATE_SYSTEM = """You are an expert SRE/diagnostics engineer with tools to inspect
+the project under diagnosis: read_file, search_code, and run_command.
+Investigate before concluding: read the source the log/stack-trace points at, and run
+the failing test or a quick check to confirm your hypothesis when useful.
+Then give the single most likely root cause in 2-4 sentences — state the root cause
+first, then the concrete evidence (file/line, command output) that supports it."""
+
+
+def _user_content(state: DiagnosisState) -> str:
+    """Assemble the diagnosis prompt from the log, retrieved context, and Critic feedback."""
+    parts = [f"FAILURE LOG:\n{state.get('parsed_log', '')}"]
+    context = "\n\n".join(state.get("retrieved_context", []))
+    if context:
+        parts.append(f"SIMILAR PAST INCIDENTS:\n{context}")
+    feedback = state.get("critic_verdict", "")
+    if feedback:
+        parts.append(f"A previous attempt was rejected. Reviewer feedback:\n{feedback}")
+    return "\n\n".join(parts)
+
 
 def diagnose(state: DiagnosisState) -> DiagnosisState:
-    log = state.get("parsed_log", "")
-
-    # Feed any retrieved context (present from P2 onward) and Critic feedback (P3).
-    context = "\n\n".join(state.get("retrieved_context", []))
-    feedback = state.get("critic_verdict", "")
-
-    user_parts = [f"FAILURE LOG:\n{log}"]
-    if context:
-        user_parts.append(f"SIMILAR PAST INCIDENTS:\n{context}")
-    if feedback:
-        user_parts.append(f"A previous attempt was rejected. Reviewer feedback:\n{feedback}")
-
+    """Log-only diagnosis (no project access)."""
     messages = [
         SystemMessage(content=SYSTEM_PROMPT),
-        HumanMessage(content="\n\n".join(user_parts)),
+        HumanMessage(content=_user_content(state)),
     ]
     response = get_llm().invoke(messages)
-
     return {"root_cause": response.content}
+
+
+def make_tool_diagnose(target_dir: str):
+    """Build a tool-using diagnose node bound to a specific project directory."""
+
+    async def diagnose_with_tools(state: DiagnosisState) -> DiagnosisState:
+        # Spawn the MCP tools scoped to this project and let the agent investigate.
+        tools = await load_tools(target_dir)
+        agent = create_react_agent(get_llm(), tools, prompt=INVESTIGATE_SYSTEM)
+        result = await agent.ainvoke({"messages": [("user", _user_content(state))]})
+        return {"root_cause": result["messages"][-1].content}
+
+    return diagnose_with_tools

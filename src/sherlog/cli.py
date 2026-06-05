@@ -4,6 +4,7 @@ Thin wrapper — it reads the log, runs the LangGraph pipeline, and prints the r
 All the real work lives in the graph/agents so the CLI stays trivial.
 """
 
+import asyncio
 import sys
 from pathlib import Path
 
@@ -33,6 +34,12 @@ def diagnose(
         "--self-correction/--no-self-correction",
         help="Run the Critic self-correction loop (default on). Off = ablation baseline.",
     ),
+    target_dir: Path | None = typer.Option(
+        None,
+        "--target-dir",
+        help="Project to investigate. When set, the diagnostician reads code and runs "
+        "tests via MCP tools instead of reasoning from the log alone.",
+    ),
 ) -> None:
     """Diagnose the root cause of a failure log."""
     # Accept either a file path or piped stdin (e.g. `cat build.log | sherlog diagnose`).
@@ -44,8 +51,12 @@ def diagnose(
         console.print("[red]Provide a log file path or pipe a log via stdin.[/red]")
         raise typer.Exit(code=1)
 
-    graph = build_graph(self_correction=self_correction)
-    result = graph.invoke({"raw_log": raw_log})
+    graph = build_graph(
+        self_correction=self_correction,
+        target_dir=str(target_dir.resolve()) if target_dir else None,
+    )
+    # ainvoke drives both the sync (log-only) and async (tool-using) graphs.
+    result = asyncio.run(graph.ainvoke({"raw_log": raw_log}))
 
     console.print(Markdown(result["report"]))
 

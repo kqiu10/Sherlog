@@ -66,3 +66,16 @@ def test_both_graph_modes_compile():
     baseline = build_graph(self_correction=False).get_graph().nodes.keys()
     assert "critic" in full
     assert "critic" not in baseline
+
+
+def test_tool_diagnose_node_is_async():
+    import asyncio
+
+    from sherlog.agents.diagnostician import make_tool_diagnose
+
+    # With a target repo the diagnose node must be async (it awaits the MCP tools).
+    assert asyncio.iscoroutinefunction(make_tool_diagnose("/tmp"))
+
+
+def test_graph_with_target_dir_compiles():
+    assert "diagnose" in build_graph(target_dir="/tmp").get_graph().nodes.keys()

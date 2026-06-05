@@ -18,7 +18,7 @@ ablation baseline used to measure how much the self-correction loop actually hel
 from langgraph.graph import END, START, StateGraph
 
 from sherlog.agents.critic import critique, verdict_passed
-from sherlog.agents.diagnostician import diagnose
+from sherlog.agents.diagnostician import diagnose, make_tool_diagnose
 from sherlog.agents.fix_proposer import propose_fix
 from sherlog.agents.ingest import ingest
 from sherlog.agents.reporter import report
@@ -36,12 +36,17 @@ def _route_after_critic(state: DiagnosisState) -> str:
     return "diagnose"  # Rejected with feedback — try again.
 
 
-def build_graph(self_correction: bool = True):
+def build_graph(self_correction: bool = True, target_dir: str | None = None):
     graph = StateGraph(DiagnosisState)
+
+    # With a target repo, diagnosis becomes a tool-using investigation (reads code,
+    # runs tests via MCP); without one it's log-only. The tool node is async, so a
+    # graph built with target_dir must be driven with `ainvoke`.
+    diagnose_node = make_tool_diagnose(target_dir) if target_dir else diagnose
 
     graph.add_node("ingest", ingest)
     graph.add_node("retrieve", retrieve)
-    graph.add_node("diagnose", diagnose)
+    graph.add_node("diagnose", diagnose_node)
     graph.add_node("propose_fix", propose_fix)
     graph.add_node("report", report)
 
