@@ -87,6 +87,26 @@ temp sandbox, applies the patch, and runs your test command. The verdict is the 
 real exit code. If it still fails, the loop retries with that feedback. The original
 project is never modified.
 
+## Security
+
+Sherlog can point an LLM at a real codebase, so the tool surface is designed for
+**least privilege** and **isolated side effects**:
+
+- **Read-only investigation.** The diagnosis and fix-proposal agents get only
+  `read_file` and `search_code`. They can inspect the project but cannot modify it or
+  execute commands — an agent can never edit the code it is diagnosing.
+- **Side effects only in a sandbox.** The single tool that runs commands is used only
+  by the deterministic verifier, and only against a **throwaway copy** of the project
+  (`copytree` → apply patch → run tests → delete). The original is never the working
+  directory.
+- **Path confinement.** All file access is resolved under the target directory; path
+  traversal (e.g. `../../etc/passwd`) is rejected.
+- **Bounded loops.** Self-correction is capped by `SHERLOG_MAX_ITERATIONS` so a run
+  always terminates.
+
+These invariants are covered by tests (e.g. the original project is asserted to be
+byte-for-byte unchanged after a verification run).
+
 ## Development
 
 ```bash
