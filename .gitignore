@@ -216,3 +216,16 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# ── Sherlog project-specific ────────────────────────
+.env
+.env.*
+!.env.example
+pgdata/                # Docker Postgres volume
+.langgraph_api/        # LangGraph dev server state
+data/raw/              # bulky downloaded logs (loghub / CI failures)
+data/embeddings/       # generated vector dumps
+eval/results/          # generated eval run outputs
+.DS_Store
+.idea/
+.vscode/
