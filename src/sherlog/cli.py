@@ -17,6 +17,12 @@ app = typer.Typer(help="Sherlog: multi-agent log diagnosis.")
 console = Console()
 
 
+@app.callback()
+def _main() -> None:
+    """Force Typer to keep subcommand form (`sherlog diagnose ...`) even with one command,
+    so adding more commands later doesn't change the existing invocation."""
+
+
 @app.command()
 def diagnose(
     logfile: Path | None = typer.Argument(
