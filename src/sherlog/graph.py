@@ -21,7 +21,7 @@ Three configurations of the gate, chosen by what's available:
 from langgraph.graph import END, START, StateGraph
 
 from sherlog.agents.critic import critique, verdict_passed
-from sherlog.agents.diagnostician import diagnose, make_tool_diagnose
+from sherlog.agents.diagnostician import make_diagnose, make_tool_diagnose
 from sherlog.agents.fix_proposer import make_structured_fix, propose_fix
 from sherlog.agents.ingest import ingest
 from sherlog.agents.reporter import report
@@ -44,6 +44,7 @@ def build_graph(
     self_correction: bool = True,
     target_dir: str | None = None,
     test_command: str | None = None,
+    diagnostician_model: str | None = None,
 ):
     graph = StateGraph(DiagnosisState)
 
@@ -52,7 +53,13 @@ def build_graph(
 
     # With a target repo, diagnosis becomes a read-only tool-using investigation;
     # without one it's log-only. Tool nodes are async, so such a graph needs `ainvoke`.
-    diagnose_node = make_tool_diagnose(target_dir) if target_dir else diagnose
+    # diagnostician_model lets the eval run a weaker (cheaper) diagnostician to create
+    # the headroom needed to measure the self-correction gain.
+    diagnose_node = (
+        make_tool_diagnose(target_dir, diagnostician_model)
+        if target_dir
+        else make_diagnose(diagnostician_model)
+    )
     # In verify mode the fix must be a structured patch the verifier can apply.
     fix_node = make_structured_fix(target_dir) if verify_mode else propose_fix
 

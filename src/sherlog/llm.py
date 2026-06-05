@@ -11,11 +11,12 @@ from langchain_anthropic import ChatAnthropic
 from sherlog.config import settings
 
 
-@lru_cache(maxsize=1)
-def get_llm() -> ChatAnthropic:
-    # lru_cache makes this a lazy singleton: built on first use, reused after.
+@lru_cache(maxsize=4)
+def get_llm(model: str | None = None) -> ChatAnthropic:
+    # Cached per model name so we can mix models (e.g. a cheap Haiku diagnostician with
+    # a stronger Critic) without rebuilding clients. Defaults to settings.sherlog_model.
     return ChatAnthropic(
-        model=settings.sherlog_model,
+        model=model or settings.sherlog_model,
         api_key=settings.anthropic_api_key,
         temperature=0,  # deterministic-ish: diagnosis should be stable, not creative
         max_tokens=1024,

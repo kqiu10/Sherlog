@@ -42,23 +42,27 @@ def _user_content(state: DiagnosisState) -> str:
     return "\n\n".join(parts)
 
 
-def diagnose(state: DiagnosisState) -> DiagnosisState:
-    """Log-only diagnosis (no project access)."""
-    messages = [
-        SystemMessage(content=SYSTEM_PROMPT),
-        HumanMessage(content=_user_content(state)),
-    ]
-    response = get_llm().invoke(messages)
-    return {"root_cause": response.content}
+def make_diagnose(model: str | None = None):
+    """Build a log-only diagnose node, optionally on a specific model (e.g. Haiku)."""
+
+    def diagnose(state: DiagnosisState) -> DiagnosisState:
+        messages = [
+            SystemMessage(content=SYSTEM_PROMPT),
+            HumanMessage(content=_user_content(state)),
+        ]
+        response = get_llm(model).invoke(messages)
+        return {"root_cause": response.content}
+
+    return diagnose
 
 
-def make_tool_diagnose(target_dir: str):
-    """Build a tool-using diagnose node bound to a specific project directory."""
+def make_tool_diagnose(target_dir: str, model: str | None = None):
+    """Build a tool-using diagnose node bound to a project directory (and optional model)."""
 
     async def diagnose_with_tools(state: DiagnosisState) -> DiagnosisState:
         # Read-only investigation: the agent can inspect the code but never mutate it.
         tools = await load_read_tools(target_dir)
-        agent = create_react_agent(get_llm(), tools, prompt=INVESTIGATE_SYSTEM)
+        agent = create_react_agent(get_llm(model), tools, prompt=INVESTIGATE_SYSTEM)
         result = await agent.ainvoke({"messages": [("user", _user_content(state))]})
         return {"root_cause": result["messages"][-1].content}
 

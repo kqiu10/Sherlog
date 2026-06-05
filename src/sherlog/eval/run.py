@@ -44,21 +44,25 @@ def _run_case(graph, log: str) -> dict:
     }
 
 
-def evaluate(limit: int | None = None) -> dict:
+def evaluate(limit: int | None = None, diagnostician_model: str | None = None) -> dict:
     cases = json.loads(CASES_FILE.read_text())
     if limit:
         cases = cases[:limit]
 
     report: dict = {
         "timestamp": datetime.now(UTC).isoformat(),
-        "model": settings.sherlog_model,
+        "judge_model": settings.sherlog_model,
+        # The diagnostician can run on a weaker model to create measurable headroom.
+        "diagnostician_model": diagnostician_model or settings.sherlog_model,
         "n_cases": len(cases),
         "modes": {},
     }
 
     for mode_name, self_correction in MODES.items():
         console.print(f"\n[bold]Running mode: {mode_name}[/bold] ({len(cases)} cases)")
-        graph = build_graph(self_correction=self_correction)
+        graph = build_graph(
+            self_correction=self_correction, diagnostician_model=diagnostician_model
+        )
         per_case = []
 
         for case in cases:
@@ -100,6 +104,7 @@ def _print_summary(report: dict) -> None:
     with_str = f"{with_m['accuracy']:.0%} ({with_m['correct']}/{with_m['total']})"
     without_str = f"{without_m['accuracy']:.0%} ({without_m['correct']}/{without_m['total']})"
     table.add_row("Cases", str(report["n_cases"]))
+    table.add_row("Diagnostician model", report["diagnostician_model"])
     table.add_row("Accuracy — with self-correction", with_str)
     table.add_row("Accuracy — without (ablation)", without_str)
     table.add_row("Self-correction gain", f"{report['self_correction_gain']:+.0%}")
@@ -110,9 +115,15 @@ def _print_summary(report: dict) -> None:
 def main() -> None:
     parser = argparse.ArgumentParser(description="Run the Sherlog evaluation.")
     parser.add_argument("--limit", type=int, default=None, help="Only run the first N cases.")
+    parser.add_argument(
+        "--diagnostician-model",
+        default=None,
+        help="Run the diagnostician on this model (e.g. claude-haiku-4-5-20251001) to "
+        "create headroom for measuring the self-correction gain. Judge stays on the default.",
+    )
     args = parser.parse_args()
 
-    report = evaluate(limit=args.limit)
+    report = evaluate(limit=args.limit, diagnostician_model=args.diagnostician_model)
     _print_summary(report)
 
     RESULTS_DIR.mkdir(parents=True, exist_ok=True)
