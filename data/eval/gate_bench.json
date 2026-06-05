@@ -1,0 +1,63 @@
+[
+  {
+    "id": "g1-falsy-correct",
+    "case": "02_falsy_zero",
+    "fix_description": "Use dict.get's default argument so an existing 0 quantity is returned: return inventory.get(item, 'out of stock').",
+    "code_edit": {
+      "file": "inventory.py",
+      "old": "return inventory.get(item) or \"out of stock\"",
+      "new": "return inventory.get(item, \"out of stock\")"
+    }
+  },
+  {
+    "id": "g2-falsy-decoy",
+    "case": "02_falsy_zero",
+    "fix_description": "Add a default to .get() so missing items report out of stock: return inventory.get(item, 'out of stock') or 'out of stock'.",
+    "code_edit": {
+      "file": "inventory.py",
+      "old": "return inventory.get(item) or \"out of stock\"",
+      "new": "return inventory.get(item, \"out of stock\") or \"out of stock\""
+    }
+  },
+  {
+    "id": "g3-rounding-counterintuitive",
+    "case": "04_rounding",
+    "_note": "Looks dubious (float rounding) and the LLM critic rejects it, but it actually passes — only running the test settles it.",
+    "fix_description": "Replace the truncating int() with Python's built-in round() to round to two decimals: return round(amount, 2).",
+    "code_edit": {
+      "file": "pricing.py",
+      "old": "return int(amount * 100) / 100",
+      "new": "return round(amount, 2)"
+    }
+  },
+  {
+    "id": "g4-intdiv-correct",
+    "case": "06_int_division",
+    "fix_description": "Use true division (/) instead of floor division (//): return sum(numbers) / len(numbers).",
+    "code_edit": {
+      "file": "stats.py",
+      "old": "return sum(numbers) // len(numbers)",
+      "new": "return sum(numbers) / len(numbers)"
+    }
+  },
+  {
+    "id": "g5-intdiv-decoy",
+    "case": "06_int_division",
+    "fix_description": "Round the computed average to the nearest value: return round(sum(numbers) / len(numbers)).",
+    "code_edit": {
+      "file": "stats.py",
+      "old": "return sum(numbers) // len(numbers)",
+      "new": "return round(sum(numbers) / len(numbers))"
+    }
+  },
+  {
+    "id": "g6-bool-correct",
+    "case": "03_bool_operator",
+    "fix_description": "Require both conditions with and: return balance >= amount and amount > 0.",
+    "code_edit": {
+      "file": "account.py",
+      "old": "return balance >= amount or amount > 0",
+      "new": "return balance >= amount and amount > 0"
+    }
+  }
+]
