@@ -24,8 +24,12 @@ dependencies = [
 sherlog = "sherlog.cli:app"
 
 [project.optional-dependencies]
+# Core eval: LLM-as-judge accuracy + self-correction ablation.
 eval = [
     "deepeval>=1.0",
+]
+# Retrieval-quality metrics (heavier deps); install separately when needed.
+eval-ragas = [
     "ragas>=0.2",
 ]
 
