@@ -24,6 +24,7 @@ class DiagnosisState(TypedDict, total=False):
 
     # ── Produced by Fix Proposer + Critic (added in P3) ────
     proposed_fix: str
+    code_edit: dict       # structured patch (file/old/new) for deterministic verify (P4.3)
     critic_verdict: str   # "pass" / "fail" + reasoning
     iterations: int       # self-correction loop counter
 

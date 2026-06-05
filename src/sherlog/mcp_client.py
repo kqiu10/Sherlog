@@ -28,6 +28,19 @@ def make_client(target_dir: str) -> MultiServerMCPClient:
     )
 
 
+# Tools that cannot mutate the project — safe to hand to investigation agents.
+READ_ONLY_TOOLS = {"read_file", "search_code"}
+
+
 async def load_tools(target_dir: str):
-    """Return the MCP tools (read_file, search_code, run_command) as LangChain tools."""
+    """Return all MCP tools (read_file, search_code, run_command) as LangChain tools."""
     return await make_client(target_dir).get_tools()
+
+
+async def load_read_tools(target_dir: str):
+    """Return only the read-only tools, so an agent can investigate but never mutate the repo.
+
+    Running commands (which could change files) is reserved for the deterministic verify
+    step, which operates on a throwaway copy — never on the project being diagnosed.
+    """
+    return [t for t in await load_tools(target_dir) if t.name in READ_ONLY_TOOLS]

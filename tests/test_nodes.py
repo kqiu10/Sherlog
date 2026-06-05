@@ -79,3 +79,9 @@ def test_tool_diagnose_node_is_async():
 
 def test_graph_with_target_dir_compiles():
     assert "diagnose" in build_graph(target_dir="/tmp").get_graph().nodes.keys()
+
+
+def test_verify_mode_graph_compiles():
+    # target_dir + test_command activates the deterministic verify gate.
+    g = build_graph(target_dir="/tmp", test_command="true")
+    assert "critic" in g.get_graph().nodes.keys()

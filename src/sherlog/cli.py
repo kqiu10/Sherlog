@@ -37,8 +37,15 @@ def diagnose(
     target_dir: Path | None = typer.Option(
         None,
         "--target-dir",
-        help="Project to investigate. When set, the diagnostician reads code and runs "
-        "tests via MCP tools instead of reasoning from the log alone.",
+        help="Project to investigate. When set, the diagnostician reads the code "
+        "via MCP tools instead of reasoning from the log alone.",
+    ),
+    test_command: str | None = typer.Option(
+        None,
+        "--test-command",
+        help="How to run the project's tests (e.g. 'python -m pytest -q'). With "
+        "--target-dir, enables deterministic verification: the fix is applied to a "
+        "copy and proven by running this command.",
     ),
 ) -> None:
     """Diagnose the root cause of a failure log."""
@@ -54,6 +61,7 @@ def diagnose(
     graph = build_graph(
         self_correction=self_correction,
         target_dir=str(target_dir.resolve()) if target_dir else None,
+        test_command=test_command,
     )
     # ainvoke drives both the sync (log-only) and async (tool-using) graphs.
     result = asyncio.run(graph.ainvoke({"raw_log": raw_log}))

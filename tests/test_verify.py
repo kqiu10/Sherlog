@@ -49,3 +49,18 @@ def test_original_repo_is_never_mutated():
     apply_and_test(REPO, CORRECT, PYTEST)
     after = (Path(REPO) / "calculator.py").read_text()
     assert before == after  # the real file still has the bug; only the copy was changed
+
+
+def test_verify_node_passes_on_correct_patch():
+    from sherlog.agents.verifier import make_verify
+
+    out = make_verify(REPO, PYTEST)({"code_edit": CORRECT.model_dump()})
+    assert out["iterations"] == 1
+    assert out["critic_verdict"].startswith("PASS")
+
+
+def test_verify_node_fails_without_patch():
+    from sherlog.agents.verifier import make_verify
+
+    out = make_verify(REPO, PYTEST)({})
+    assert out["critic_verdict"].startswith("FAIL")
