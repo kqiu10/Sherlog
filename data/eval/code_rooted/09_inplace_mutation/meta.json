@@ -1,0 +1,6 @@
+{
+  "id": "cr-09",
+  "title": "In-place sort mutates the caller's list",
+  "expected_root_cause": "top_scores calls scores.sort() which sorts the input list in place, mutating the caller's list as a side effect. It should sort a copy (e.g. sorted(scores)) instead of mutating the argument.",
+  "test_command": "python -m pytest -q"
+}

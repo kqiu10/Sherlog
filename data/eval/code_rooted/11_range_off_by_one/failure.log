@@ -1,0 +1,16 @@
+F                                                                        [100%]Running teardown with pytest sessionfinish...
+
+=================================== FAILURES ===================================
+____________________________ test_counts_inclusive _____________________________
+
+    def test_counts_inclusive():
+>       assert count_to(3) == [1, 2, 3]
+E       assert [1, 2] == [1, 2, 3]
+E         
+E         Right contains one more item: 3
+E         Use -v to get more diff
+
+test_sequence.py:5: AssertionError
+=========================== short test summary info ============================
+FAILED test_sequence.py::test_counts_inclusive - assert [1, 2] == [1, 2, 3]
+1 failed in 0.08s

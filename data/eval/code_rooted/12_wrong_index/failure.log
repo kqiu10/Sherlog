@@ -1,0 +1,16 @@
+F                                                                        [100%]Running teardown with pytest sessionfinish...
+
+=================================== FAILURES ===================================
+___________________________ test_returns_first_field ___________________________
+
+    def test_returns_first_field():
+>       assert first_field("alice,bob,carol") == "alice"
+E       AssertionError: assert 'bob' == 'alice'
+E         
+E         - alice
+E         + bob
+
+test_parser.py:5: AssertionError
+=========================== short test summary info ============================
+FAILED test_parser.py::test_returns_first_field - AssertionError: assert 'bob...
+1 failed in 0.08s

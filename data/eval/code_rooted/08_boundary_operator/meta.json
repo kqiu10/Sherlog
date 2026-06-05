@@ -1,0 +1,6 @@
+{
+  "id": "cr-08",
+  "title": "Off-by-one boundary in comparison",
+  "expected_root_cause": "is_adult uses `age > 18` instead of `age >= 18`, so the boundary value 18 is wrongly excluded. The comparison operator should be >= to include exactly 18.",
+  "test_command": "python -m pytest -q"
+}

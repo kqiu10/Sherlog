@@ -1,0 +1,6 @@
+{
+  "id": "cr-11",
+  "title": "Exclusive range drops the last value",
+  "expected_root_cause": "count_to uses range(1, n), whose upper bound is exclusive, so it stops at n-1 and omits n. It should use range(1, n + 1) to include n.",
+  "test_command": "python -m pytest -q"
+}

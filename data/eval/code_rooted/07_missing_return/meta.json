@@ -1,0 +1,6 @@
+{
+  "id": "cr-07",
+  "title": "Missing return yields None",
+  "expected_root_cause": "order_total computes sum(prices) but never returns it, so the function implicitly returns None. The result line is missing a return statement.",
+  "test_command": "python -m pytest -q"
+}

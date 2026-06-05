@@ -1,0 +1,14 @@
+F                                                                        [100%]Running teardown with pytest sessionfinish...
+
+=================================== FAILURES ===================================
+____________________________ test_eighteen_is_adult ____________________________
+
+    def test_eighteen_is_adult():
+>       assert is_adult(18) is True
+E       assert False is True
+E        +  where False = is_adult(18)
+
+test_age.py:5: AssertionError
+=========================== short test summary info ============================
+FAILED test_age.py::test_eighteen_is_adult - assert False is True
+1 failed in 0.08s

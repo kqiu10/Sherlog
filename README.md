@@ -37,15 +37,20 @@ LangGraph · Claude (Anthropic) · pgvector · RAGAS / DeepEval · MCP · Python
 Measured on `claude-sonnet-4-6`. These evals are designed to test value that
 **does not depend on using a weak model** — the gains hold on a strong one.
 
-**Grounded gain — does reading the code help?** On 6 *code-rooted* cases (failure
+**Grounded gain — does reading the code help?** On 12 *code-rooted* cases (failure
 logs that show only a symptom, with the real cause in the code), diagnosis was run
 two ways on the same model, self-correction off:
 
 | Diagnosis mode | Root-cause accuracy |
 |---|---|
-| Log-only | 67% |
+| Log-only | 83% |
 | Tool-augmented (reads the code via MCP) | **100%** |
-| **Grounded gain** | **+33%** |
+| **Grounded gain** | **+17%** |
+
+Tool-augmented diagnosis was correct on *every* case; log-only failed exactly where the
+assertion alone gives no usable clue (e.g. `assert True is False` from a wrong boolean
+operator). A strong model infers many code bugs from the symptom — the gain is the
+slice where it genuinely can't.
 
 **Verification vs. opinion — how reliable is the gate?** On a 6-fix gate benchmark
 (correct + plausible-but-wrong fixes), scored against whether the test actually passes:

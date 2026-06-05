@@ -1,0 +1,6 @@
+{
+  "id": "cr-12",
+  "title": "Wrong list index returns the second field",
+  "expected_root_cause": "first_field returns line.split(',')[1], i.e. the second field, instead of [0], the first field. The index should be 0.",
+  "test_command": "python -m pytest -q"
+}

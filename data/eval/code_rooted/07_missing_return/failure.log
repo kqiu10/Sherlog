@@ -1,0 +1,14 @@
+F                                                                        [100%]Running teardown with pytest sessionfinish...
+
+=================================== FAILURES ===================================
+__________________________________ test_total __________________________________
+
+    def test_total():
+>       assert order_total([10, 20, 5]) == 35
+E       assert None == 35
+E        +  where None = order_total([10, 20, 5])
+
+test_orders.py:5: AssertionError
+=========================== short test summary info ============================
+FAILED test_orders.py::test_total - assert None == 35
+1 failed in 0.08s

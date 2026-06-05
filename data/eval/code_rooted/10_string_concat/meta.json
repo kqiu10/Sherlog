@@ -1,0 +1,6 @@
+{
+  "id": "cr-10",
+  "title": "String concatenation instead of numeric addition",
+  "expected_root_cause": "add coerces both arguments to strings and concatenates them (str(a) + str(b)), producing '12' instead of adding the numbers to get 3. It should add the values numerically.",
+  "test_command": "python -m pytest -q"
+}
