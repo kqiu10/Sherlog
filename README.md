@@ -52,16 +52,18 @@ assertion alone gives no usable clue (e.g. `assert True is False` from a wrong b
 operator). A strong model infers many code bugs from the symptom — the gain is the
 slice where it genuinely can't.
 
-**Verification vs. opinion — how reliable is the gate?** On a 6-fix gate benchmark
-(correct + plausible-but-wrong fixes), scored against whether the test actually passes:
+**Verification vs. opinion — how reliable is the gate?** On a 14-fix gate benchmark
+(correct + plausible-but-wrong fixes, 5 of them broken), scored against whether the
+test actually passes:
 
 | Gate | Accuracy vs. ground truth |
 |---|---|
-| LLM critic (reasons about the fix) | 83% |
+| LLM critic (reasons about the fix) | 93% |
 | Deterministic verifier (applies it, runs the tests) | **100%** |
 
-The critic's miss is instructive: it *rejected* a `round()` fix that float intuition
-says is broken but actually passes — only running the test settles it.
+The verifier caught all 5 broken fixes. The critic's single miss is instructive: it
+*rejected* a `round()` fix that float intuition says is broken but actually passes —
+only running the test settles it. Opinion is good; proof is exact.
 
 Reproduce: `uv run python -m sherlog.eval.run_grounded` and `... .run_gates`.
 

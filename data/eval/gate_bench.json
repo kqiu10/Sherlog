@@ -59,5 +59,85 @@
       "old": "return balance >= amount or amount > 0",
       "new": "return balance >= amount and amount > 0"
     }
+  },
+  {
+    "id": "g7-missing-return-correct",
+    "case": "07_missing_return",
+    "fix_description": "Return the computed sum so the function no longer returns None: return sum(prices).",
+    "code_edit": {
+      "file": "orders.py",
+      "old": "    sum(prices)",
+      "new": "    return sum(prices)"
+    }
+  },
+  {
+    "id": "g8-inplace-correct",
+    "case": "09_inplace_mutation",
+    "fix_description": "Sort a copy with sorted() instead of mutating the caller's list in place.",
+    "code_edit": {
+      "file": "ranking.py",
+      "old": "    scores.sort(reverse=True)\n    return scores[:3]",
+      "new": "    return sorted(scores, reverse=True)[:3]"
+    }
+  },
+  {
+    "id": "g9-inplace-decoy",
+    "case": "09_inplace_mutation",
+    "fix_description": "Capture the sorted list by assigning the result: scores = scores.sort(reverse=True), then return the top three.",
+    "code_edit": {
+      "file": "ranking.py",
+      "old": "    scores.sort(reverse=True)",
+      "new": "    scores = scores.sort(reverse=True)"
+    }
+  },
+  {
+    "id": "g10-concat-correct",
+    "case": "10_string_concat",
+    "fix_description": "Add the values numerically instead of coercing to strings: return a + b.",
+    "code_edit": {
+      "file": "calc.py",
+      "old": "return str(a) + str(b)",
+      "new": "return a + b"
+    }
+  },
+  {
+    "id": "g11-concat-decoy",
+    "case": "10_string_concat",
+    "fix_description": "Convert the concatenated string back to an integer: return int(str(a) + str(b)).",
+    "code_edit": {
+      "file": "calc.py",
+      "old": "return str(a) + str(b)",
+      "new": "return int(str(a) + str(b))"
+    }
+  },
+  {
+    "id": "g12-range-correct",
+    "case": "11_range_off_by_one",
+    "fix_description": "Make the upper bound inclusive with range(1, n + 1).",
+    "code_edit": {
+      "file": "sequence.py",
+      "old": "return list(range(1, n))",
+      "new": "return list(range(1, n + 1))"
+    }
+  },
+  {
+    "id": "g13-range-decoy",
+    "case": "11_range_off_by_one",
+    "fix_description": "Start the range at 0 so it includes the right count: return list(range(0, n)).",
+    "code_edit": {
+      "file": "sequence.py",
+      "old": "return list(range(1, n))",
+      "new": "return list(range(0, n))"
+    }
+  },
+  {
+    "id": "g14-index-correct",
+    "case": "12_wrong_index",
+    "fix_description": "Return the first field using index 0: return line.split(',')[0].",
+    "code_edit": {
+      "file": "parser.py",
+      "old": "return line.split(\",\")[1]",
+      "new": "return line.split(\",\")[0]"
+    }
   }
 ]
