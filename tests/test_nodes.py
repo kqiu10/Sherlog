@@ -5,8 +5,10 @@ These run with no API key and no network: they verify the deterministic plumbing
 diagnose node is covered separately with mocks / eval, not here.
 """
 
+from sherlog.agents.critic import verdict_passed
 from sherlog.agents.ingest import MAX_LOG_CHARS, ingest
 from sherlog.agents.reporter import report
+from sherlog.graph import _route_after_critic, build_graph
 
 
 def test_ingest_strips_and_passes_through():
@@ -31,7 +33,36 @@ def test_report_includes_fix_and_iterations_when_present():
     out = report({
         "root_cause": "x",
         "proposed_fix": "guard the undefined",
+        "critic_verdict": "PASS\nlooks correct",
         "iterations": 2,
     })
     assert "Proposed Fix" in out["report"]
     assert "2 self-correction" in out["report"]
+    assert "accepted by Critic" in out["report"]
+
+
+def test_verdict_passed_parsing():
+    assert verdict_passed("PASS\nthe fix is correct")
+    assert verdict_passed("  pass — fine")
+    assert not verdict_passed("FAIL\nroot cause ignores the stack trace")
+    assert not verdict_passed("")
+
+
+def test_route_passes_to_report_on_pass():
+    assert _route_after_critic({"critic_verdict": "PASS", "iterations": 1}) == "report"
+
+
+def test_route_retries_on_fail_under_budget():
+    assert _route_after_critic({"critic_verdict": "FAIL: wrong", "iterations": 1}) == "diagnose"
+
+
+def test_route_gives_up_at_max_iterations():
+    # With the default budget (3), a FAIL at iteration 3 must stop, not loop forever.
+    assert _route_after_critic({"critic_verdict": "FAIL", "iterations": 3}) == "report"
+
+
+def test_both_graph_modes_compile():
+    full = build_graph(self_correction=True).get_graph().nodes.keys()
+    baseline = build_graph(self_correction=False).get_graph().nodes.keys()
+    assert "critic" in full
+    assert "critic" not in baseline

@@ -28,6 +28,11 @@ def diagnose(
     logfile: Path | None = typer.Argument(
         None, help="Path to a failure log. If omitted, read from stdin."
     ),
+    self_correction: bool = typer.Option(
+        True,
+        "--self-correction/--no-self-correction",
+        help="Run the Critic self-correction loop (default on). Off = ablation baseline.",
+    ),
 ) -> None:
     """Diagnose the root cause of a failure log."""
     # Accept either a file path or piped stdin (e.g. `cat build.log | sherlog diagnose`).
@@ -39,7 +44,7 @@ def diagnose(
         console.print("[red]Provide a log file path or pipe a log via stdin.[/red]")
         raise typer.Exit(code=1)
 
-    graph = build_graph()
+    graph = build_graph(self_correction=self_correction)
     result = graph.invoke({"raw_log": raw_log})
 
     console.print(Markdown(result["report"]))
