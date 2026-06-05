@@ -52,6 +52,9 @@ packages = ["src/sherlog"]
 [tool.ruff]
 line-length = 100
 target-version = "py311"
+# Fixture repos contain intentional bugs (mutable defaults, etc.) used by the eval
+# and demos — don't lint them.
+extend-exclude = ["examples", "data"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]

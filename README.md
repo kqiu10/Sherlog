@@ -8,29 +8,25 @@ Sherlog is a multi-agent fault-diagnosis tool built on [LangGraph](https://langc
 
 ## Architecture
 
+```mermaid
+flowchart TD
+    IN[Failure log] --> ING[Ingest]
+    ING --> RET[Retrieve similar incidents]
+    PG[(pgvector<br/>past incidents)] -. RAG .-> RET
+    RET --> DIA[Diagnose root cause]
+    TOOLS[/MCP tools<br/>read_file · search_code/] -. read-only .-> DIA
+    DIA --> FIX[Propose fix]
+    FIX --> GATE{Verify / Critic}
+    GATE -- fail, retry &lt; N --> DIA
+    GATE -- pass --> REP[Report]
+    SBX[[Sandbox copy<br/>apply patch · run tests]] -. deterministic proof .-> GATE
 ```
-  failure log / diff
-        │
-        ▼
-   [Ingest]  ── structured input
-        │
-        ▼
-   [Retriever (RAG)] ◄──── pgvector (similar incidents / runbooks / code)
-        │
-        ▼
-   [Diagnostician] ── root-cause hypothesis
-        │
-        ▼
-   [Fix Proposer] ── proposed fix
-        │
-        ▼
-   [Critic] ──(fail & iterations < N, with feedback)──► back to Diagnostician   ← self-correction loop
-        │ pass
-        ▼
-   [Reporter] ── final report
 
-  Tools (MCP): fetch logs / search code / run lint
-```
+- **Retrieve** grounds the diagnosis in similar past incidents (pgvector RAG).
+- **Diagnose** reads the actual code through **read-only** MCP tools.
+- The **gate** is either an LLM critic (opinion) or — given a target repo + test command —
+  a **deterministic verifier** that applies the fix to a sandbox copy and runs the tests.
+- A bounded self-correction loop feeds failures back to the diagnostician with the reason.
 
 ## Tech stack
 
@@ -92,6 +88,29 @@ uv run sherlog diagnose examples/buggy_calculator/failure.log \
   --target-dir examples/buggy_calculator \
   --test-command "python -m pytest -q"
 ```
+
+That last command produces (abridged):
+
+```markdown
+# Sherlog Diagnosis
+
+## Root Cause
+`apply_discount` subtracts the raw `pct` value as a flat amount instead of treating it
+as a percentage. `apply_discount(100, 0.1)` computes `100 - 0.1 = 99.9` instead of 90.
+Evidence: calculator.py line 11 — `return price - pct`.
+
+## Proposed Fix
+--- calculator.py ---
+- return price - pct
++ return price * (1 - pct)
+
+## Verification
+Status: ✅ accepted after 1 iteration.
+PASS — the fix was applied and the tests passed.  (exit_code=0, 1 passed)
+```
+
+The diagnosis is grounded in the actual source, and the fix is **proven** by an
+isolated test run — the original project is never modified.
 
 ### MCP tools
 
