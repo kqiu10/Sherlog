@@ -1,0 +1,19 @@
+F                                                                        [100%]Running teardown with pytest sessionfinish...
+
+=================================== FAILURES ===================================
+________________________ test_each_cart_is_independent _________________________
+
+    def test_each_cart_is_independent():
+        assert add_item("apple") == ["apple"]
+        # A fresh call should start empty — but the mutable default keeps the old item.
+>       assert add_item("banana") == ["banana"]
+E       AssertionError: assert ['apple', 'banana'] == ['banana']
+E         
+E         At index 0 diff: 'apple' != 'banana'
+E         Left contains one more item: 'banana'
+E         Use -v to get more diff
+
+test_cart.py:7: AssertionError
+=========================== short test summary info ============================
+FAILED test_cart.py::test_each_cart_is_independent - AssertionError: assert [...
+1 failed in 0.08s

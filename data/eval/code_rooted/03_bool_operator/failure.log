@@ -1,0 +1,15 @@
+F                                                                        [100%]Running teardown with pytest sessionfinish...
+
+=================================== FAILURES ===================================
+_____________________________ test_cannot_overdraw _____________________________
+
+    def test_cannot_overdraw():
+        # Withdrawing more than the balance must be rejected.
+>       assert can_withdraw(balance=50, amount=100) is False
+E       assert True is False
+E        +  where True = can_withdraw(balance=50, amount=100)
+
+test_account.py:6: AssertionError
+=========================== short test summary info ============================
+FAILED test_account.py::test_cannot_overdraw - assert True is False
+1 failed in 0.08s

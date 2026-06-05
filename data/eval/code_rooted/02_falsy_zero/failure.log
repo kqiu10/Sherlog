@@ -1,0 +1,15 @@
+F                                                                        [100%]Running teardown with pytest sessionfinish...
+
+=================================== FAILURES ===================================
+_____________________ test_zero_stock_is_reported_as_zero ______________________
+
+    def test_zero_stock_is_reported_as_zero():
+        # An item that exists with 0 units should report 0, not "out of stock".
+>       assert get_stock({"apples": 0}, "apples") == 0
+E       AssertionError: assert 'out of stock' == 0
+E        +  where 'out of stock' = get_stock({'apples': 0}, 'apples')
+
+test_inventory.py:6: AssertionError
+=========================== short test summary info ============================
+FAILED test_inventory.py::test_zero_stock_is_reported_as_zero - AssertionErro...
+1 failed in 0.08s

@@ -1,0 +1,6 @@
+{
+  "id": "cr-05",
+  "title": "Off-by-one slice returns too few items",
+  "expected_root_cause": "last_n slices with items[-n + 1:] instead of items[-n:], dropping one extra element, so it returns one fewer item than requested (2 instead of 3).",
+  "test_command": "python -m pytest -q"
+}

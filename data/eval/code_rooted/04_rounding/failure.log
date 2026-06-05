@@ -1,0 +1,15 @@
+F                                                                        [100%]Running teardown with pytest sessionfinish...
+
+=================================== FAILURES ===================================
+_____________________________ test_rounds_half_up ______________________________
+
+    def test_rounds_half_up():
+        # 2.345 should round to 2.35, not truncate to 2.34.
+>       assert round_price(2.345) == 2.35
+E       assert 2.34 == 2.35
+E        +  where 2.34 = round_price(2.345)
+
+test_pricing.py:6: AssertionError
+=========================== short test summary info ============================
+FAILED test_pricing.py::test_rounds_half_up - assert 2.34 == 2.35
+1 failed in 0.08s

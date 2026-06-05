@@ -1,0 +1,6 @@
+{
+  "id": "cr-04",
+  "title": "Truncation instead of rounding",
+  "expected_root_cause": "round_price uses int(), which truncates toward zero instead of rounding, so 2.345 becomes 2.34 instead of 2.35. It should use round() (or proper decimal rounding).",
+  "test_command": "python -m pytest -q"
+}

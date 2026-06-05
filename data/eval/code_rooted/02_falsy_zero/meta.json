@@ -1,0 +1,6 @@
+{
+  "id": "cr-02",
+  "title": "`or` default treats 0 as missing",
+  "expected_root_cause": "get_stock uses `inventory.get(item) or default`, which treats a real quantity of 0 as falsy and falls through to the default; an in-stock item with 0 units is wrongly reported as out of stock.",
+  "test_command": "python -m pytest -q"
+}

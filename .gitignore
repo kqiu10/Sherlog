@@ -238,6 +238,7 @@ eval/results/
 # Sample/fixture logs are intentional test data, not runtime logs — keep them
 # (GitHub's Python template ignores *.log, which would otherwise drop these).
 !data/samples/*.log
+!data/eval/**/*.log
 !examples/**/*.log
 
 # OS / editor

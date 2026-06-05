@@ -1,0 +1,6 @@
+{
+  "id": "cr-03",
+  "title": "Wrong boolean operator approves overdrafts",
+  "expected_root_cause": "can_withdraw uses `or` instead of `and`, so it returns True whenever amount > 0 regardless of the balance; it approves withdrawals larger than the available balance.",
+  "test_command": "python -m pytest -q"
+}

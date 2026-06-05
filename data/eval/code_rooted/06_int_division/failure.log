@@ -1,0 +1,15 @@
+F                                                                        [100%]Running teardown with pytest sessionfinish...
+
+=================================== FAILURES ===================================
+________________________ test_average_is_not_truncated _________________________
+
+    def test_average_is_not_truncated():
+        # The average of 1 and 2 is 1.5, not 1.
+>       assert average([1, 2]) == 1.5
+E       assert 1 == 1.5
+E        +  where 1 = average([1, 2])
+
+test_stats.py:6: AssertionError
+=========================== short test summary info ============================
+FAILED test_stats.py::test_average_is_not_truncated - assert 1 == 1.5
+1 failed in 0.09s

@@ -1,0 +1,6 @@
+{
+  "id": "cr-01",
+  "title": "Mutable default argument accumulates state",
+  "expected_root_cause": "add_item uses a mutable default argument (items=[]), so the same list object is shared across calls; items accumulate between invocations instead of each call starting from an empty list.",
+  "test_command": "python -m pytest -q"
+}

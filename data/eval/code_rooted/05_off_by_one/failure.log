@@ -1,0 +1,18 @@
+F                                                                        [100%]Running teardown with pytest sessionfinish...
+
+=================================== FAILURES ===================================
+___________________________ test_returns_last_three ____________________________
+
+    def test_returns_last_three():
+        # The last 3 of five items should be [3, 4, 5].
+>       assert last_n([1, 2, 3, 4, 5], 3) == [3, 4, 5]
+E       assert [4, 5] == [3, 4, 5]
+E         
+E         At index 0 diff: 4 != 3
+E         Right contains one more item: 5
+E         Use -v to get more diff
+
+test_recent.py:6: AssertionError
+=========================== short test summary info ============================
+FAILED test_recent.py::test_returns_last_three - assert [4, 5] == [3, 4, 5]
+1 failed in 0.08s

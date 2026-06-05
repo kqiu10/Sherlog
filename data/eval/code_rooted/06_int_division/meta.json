@@ -1,0 +1,6 @@
+{
+  "id": "cr-06",
+  "title": "Integer division truncates the average",
+  "expected_root_cause": "average uses // (floor/integer division) instead of /, so the fractional part is truncated and the average of 1 and 2 returns 1 instead of 1.5.",
+  "test_command": "python -m pytest -q"
+}
