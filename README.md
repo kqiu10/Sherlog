@@ -36,6 +36,34 @@ Sherlog is a multi-agent fault-diagnosis tool built on [LangGraph](https://langc
 
 LangGraph · Claude (Anthropic) · pgvector · RAGAS / DeepEval · MCP · Python 3.11+
 
+## Results
+
+Measured on `claude-sonnet-4-6`. These evals are designed to test value that
+**does not depend on using a weak model** — the gains hold on a strong one.
+
+**Grounded gain — does reading the code help?** On 6 *code-rooted* cases (failure
+logs that show only a symptom, with the real cause in the code), diagnosis was run
+two ways on the same model, self-correction off:
+
+| Diagnosis mode | Root-cause accuracy |
+|---|---|
+| Log-only | 67% |
+| Tool-augmented (reads the code via MCP) | **100%** |
+| **Grounded gain** | **+33%** |
+
+**Verification vs. opinion — how reliable is the gate?** On a 6-fix gate benchmark
+(correct + plausible-but-wrong fixes), scored against whether the test actually passes:
+
+| Gate | Accuracy vs. ground truth |
+|---|---|
+| LLM critic (reasons about the fix) | 83% |
+| Deterministic verifier (applies it, runs the tests) | **100%** |
+
+The critic's miss is instructive: it *rejected* a `round()` fix that float intuition
+says is broken but actually passes — only running the test settles it.
+
+Reproduce: `uv run python -m sherlog.eval.run_grounded` and `... .run_gates`.
+
 ## Quickstart
 
 ```bash
