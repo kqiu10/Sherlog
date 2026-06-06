@@ -2,6 +2,12 @@
 
 **Multi-agent log diagnosis: finds root cause, proposes fixes, and self-verifies.**
 
+![Sherlog reads the code, proposes a fix, and proves it by running the tests](docs/demo.gif)
+
+*Diagnosing a real bug: the agent reads the source, proposes a structured patch, and the
+verifier applies it to a sandbox copy and runs the tests — a green test, not an opinion.
+(Recording sped up ~2×.)*
+
 Sherlog is a multi-agent fault-diagnosis tool built on [LangGraph](https://langchain-ai.github.io/langgraph/). It ingests a failure log, retrieves similar historical incidents and code context via RAG (pgvector), hypothesizes the root cause, proposes a fix, and runs a **self-correction loop** where a Critic agent validates the result and feeds back until the diagnosis holds. It ships with rigorous evaluation (RAGAS / DeepEval) so accuracy is reported with real numbers, not just a demo.
 
 > Status: early development. End-to-end pipeline (ingest → RAG retrieve → diagnose → propose fix → self-correct → report) runs today, including MCP tool-use and an eval harness. Rigorous accuracy numbers on a hardened eval set are in progress.

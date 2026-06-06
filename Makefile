@@ -34,5 +34,9 @@ demo: ## Diagnose the bundled buggy project, with verification
 		--target-dir examples/buggy_calculator \
 		--test-command "python -m pytest -q"
 
-demo-gif: ## Record docs/demo.gif (needs `brew install vhs`)
+demo-gif: ## Record + 2x-speed docs/demo.gif (needs: brew install vhs ttyd ffmpeg)
 	vhs demo.tape
+	ffmpeg -y -i docs/demo.gif -filter_complex \
+		"[0:v]setpts=0.5*PTS,fps=12,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse" \
+		docs/.demo.tmp.gif
+	mv docs/.demo.tmp.gif docs/demo.gif
