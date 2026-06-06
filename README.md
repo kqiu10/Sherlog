@@ -34,6 +34,9 @@ flowchart TD
   a **deterministic verifier** that applies the fix to a sandbox copy and runs the tests.
 - A bounded self-correction loop feeds failures back to the diagnostician with the reason.
 
+See **[ARCHITECTURE.md](ARCHITECTURE.md)** for a component-by-component deep dive and the
+design decisions behind each piece.
+
 ## Tech stack
 
 LangGraph · Claude (Anthropic) · pgvector · RAGAS / DeepEval · MCP · Python 3.11+
